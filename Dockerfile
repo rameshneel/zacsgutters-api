@@ -37,6 +37,7 @@ COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/src ./src
 COPY --from=builder --chown=node:node /app/public ./public
+COPY --from=builder --chown=node:node /app/logs ./logs 
 
 # Add custom NODE_PATH if needed
 ENV NODE_PATH=/app/node_modules
