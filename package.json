@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
-    "test": "echo \"Running tests...\" && exit 0"
+    "test": "echo \"Running tests...\" && exit 0",
+     "lint": "eslint ."
   },
   "author": "@ramesh",
   "license": "ISC",
@@ -27,6 +28,7 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+     "eslint": "^7.0.0"
   }
 }
