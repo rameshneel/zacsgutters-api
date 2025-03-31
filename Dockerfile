@@ -15,7 +15,10 @@ RUN npm ci --production=false
 
 # Copy source code
 COPY . .
-
+RUN mkdir -p /app/logs  # Explicitly create logs directory
+# Agar local mein logs folder hai to COPY . . se aayega, warna khali folder banega
+# RUN npm run build
+# RUN npm test
 # Build and test if needed
 # RUN npm run build
 # RUN npm test
