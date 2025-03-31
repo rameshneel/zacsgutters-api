@@ -27,7 +27,7 @@ const checkCustomer = asyncHandler(async (req, res, next) => {
     const { email, postcode, selectedDate, selectedTimeSlot } = req.body;
 
     // Joi validation
-    const { error, value } = validateCustomerInput(req.body);
+    const { error } = validateCustomerInput(req.body);
     if (error) {
       const errorMessage = error.details.map((err) => err.message).join(", ");
       throw new ApiError(400, `Validation failed: ${errorMessage}`);
@@ -58,7 +58,9 @@ const checkCustomer = asyncHandler(async (req, res, next) => {
           // res.status(200).json({ message: 'Files uploaded and deleted successfully' });
         })
         .catch((err) => {
-          res.status(500).json({ error: "Failed to delete one or more files" });
+          res
+            .status(500)
+            .json({ error: "Failed to delete one or more files", err });
         });
     }
 
@@ -216,7 +218,7 @@ const createCustomer = asyncHandler(async (req, res, next) => {
     } = req.body;
 
     // Joi validation
-    const { error, value } = validateCustomerInput(req.body);
+    const { error } = validateCustomerInput(req.body);
     if (error) {
       const errorMessage = error.details.map((err) => err.message).join(", ");
       throw new ApiError(400, `Validation failed: ${errorMessage}`);

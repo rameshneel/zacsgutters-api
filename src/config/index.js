@@ -17,16 +17,24 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 
 // Load environment-specific configuration
 let envConfig = {};
-try {
-  const envConfigPath = path.resolve(__dirname, `./env/${NODE_ENV}.js`);
-  if (fs.existsSync(envConfigPath)) {
-    envConfig = await import(envConfigPath);
-    envConfig = envConfig.default || envConfig;
-  }
-} catch (error) {
-  console.error(`Error loading environment config: ${error.message}`);
-}
 
+const loadEnvConfig = async () => {
+  try {
+    const envConfigPath = path.resolve(
+      __dirname,
+      `./env/${process.env.NODE_ENV}.js`
+    );
+    if (fs.existsSync(envConfigPath)) {
+      const envModule = await import(envConfigPath);
+      envConfig = envModule.default || envModule;
+    }
+  } catch (error) {
+    console.error(`Error loading environment config: ${error.message}`);
+  }
+};
+
+// Call the function to load the environment config
+loadEnvConfig();
 // Default configuration
 const defaultConfig = {
   // Server configuration

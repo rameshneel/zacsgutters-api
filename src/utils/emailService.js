@@ -127,8 +127,8 @@ export const sendCustomerConfirmationEmail = async (
             <p><strong>Date:</strong> ${formatDate(date)}</p>
             <p><strong>Time:</strong> ${timeSlot}</p>
             <p><strong>Service:</strong> ${serviceDescription}, ${
-  customer.numberOfBedrooms
-}, ${customer.selectHomeStyle}</p>
+              customer.numberOfBedrooms
+            }, ${customer.selectHomeStyle}</p>
             ${serviceOptions}
             <p><strong>Amount Paid:</strong>£ ${formatCurrency(amount)}</p>
           </div>
@@ -138,14 +138,14 @@ export const sendCustomerConfirmationEmail = async (
           <p>For any questions or assistance, please don't hesitate to reach out to us:</p>
           <p>
             <a href="mailto:${
-  process.env.COMPANY_EMAIL
-}" class="btn" style="margin-left: 10px;">Email Us</a>
+              process.env.COMPANY_EMAIL
+            }" class="btn" style="margin-left: 10px;">Email Us</a>
           </p>
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} ${
-  process.env.COMPANY_NAME
-}. All rights reserved.</p>
+            process.env.COMPANY_NAME
+          }. All rights reserved.</p>
           <p>This is an automated email. Please do not reply directly to this message.</p>
         </div>
       </div>
@@ -214,12 +214,12 @@ export const sendAdminNotificationEmail = async (
               <tr><th>Email</th><td>${customer.email}</td></tr>
               <tr><th>Phone</th><td>${customer.contactNumber || "N/A"}</td></tr>
                <tr><th>first Line Of Address</th><td>${
-  customer.firstLineOfAddress || "N/A"
-}</td></tr>
+                 customer.firstLineOfAddress || "N/A"
+               }</td></tr>
                 <tr><th>Town</th><td>${customer.town || "N/A"}</td></tr>
                 <tr><th>Post Code</th><td>${
-  customer.postcode || "N/A"
-}</td></tr>
+                  customer.postcode || "N/A"
+                }</td></tr>
                 
             </table>
           </div>
@@ -230,8 +230,8 @@ export const sendAdminNotificationEmail = async (
               <tr><th>Date</th><td>${formatDate(date)}</td></tr>
               <tr><th>Time</th><td>${timeSlot}</td></tr>
               <tr><th>Service</th><td> ${serviceDescription}, ${
-  customer.numberOfBedrooms
-},${customer.selectHomeStyle}</td></tr>
+                customer.numberOfBedrooms
+              },${customer.selectHomeStyle}</td></tr>
                ${serviceOptions}
               <tr><th>Amount Paid</th><td>${formatCurrency(amount)}</td></tr>
             </table>
@@ -338,8 +338,8 @@ export const sendCustomerRefundEmail = async (customer, refundDetails) => {
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} ${
-  process.env.COMPANY_NAME
-}. All rights reserved.</p>
+            process.env.COMPANY_NAME
+          }. All rights reserved.</p>
           <p>This is an automated email. Please do not reply directly to this message.</p>
         </div>
       </div>
@@ -434,8 +434,8 @@ export const sendAdminRefundNotificationEmail = async (
         </div>
         <div class="footer">
           <p>&copy; ${new Date().getFullYear()} ${
-  process.env.COMPANY_NAME
-}. All rights reserved.</p>
+            process.env.COMPANY_NAME
+          }. All rights reserved.</p>
           <p>This is an automated email. Please do not reply directly to this message.</p>
         </div>
       </div>
