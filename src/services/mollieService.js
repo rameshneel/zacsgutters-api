@@ -109,6 +109,6 @@ export async function handlePaymentStatus(paymentId) {
     return payment;
   } catch (error) {
     console.error("Error fetching payment status:", error.message);
-    return res.status(500).json({ error: "Unable to fetch payment status" });
+    throw error;
   }
 }

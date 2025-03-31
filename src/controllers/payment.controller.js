@@ -24,26 +24,7 @@ const mollieClient = createMollieClient({
 
 const checkCustomer = asyncHandler(async (req, res, next) => {
   try {
-    const {
-      customerName,
-      email,
-      contactNumber,
-      firstLineOfAddress,
-      town,
-      postcode,
-      selectedDate,
-      selectedTimeSlot,
-      selectService,
-      gutterCleaningOptions,
-      gutterRepairsOptions,
-      selectHomeType,
-      selectHomeStyle,
-      numberOfBedrooms,
-      numberOfStories,
-      paymentMethod,
-      termsConditions,
-      message,
-    } = req.body;
+    const { email, postcode, selectedDate, selectedTimeSlot } = req.body;
 
     // Joi validation
     const { error, value } = validateCustomerInput(req.body);
@@ -718,10 +699,10 @@ const handleCanceledPayment = asyncHandler(async (req, res, next) => {
     await customer.save();
 
     // Send cancellation email to the customer
-    await sendCustomerCancellationEmail(customer);
+    // await sendCustomerCancellationEmail(customer);
 
     // Send notification email to the admin
-    await sendAdminCancellationNotificationEmail(customer);
+    // await sendAdminCancellationNotificationEmail(customer);
 
     console.log(
       `Payment cancellation processed successfully for customer: ${customer.email}`

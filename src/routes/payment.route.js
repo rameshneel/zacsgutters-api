@@ -12,7 +12,7 @@ import {
   handlePaymentRefundForMollie,
 } from "../controllers/payment.controller.js";
 import { uploadMultiplePhotos } from "../middlewares/multer.middleware.js";
-
+import multer from "multer";
 // Middleware to handle multer errors
 const handleMulterError = (err, req, res, next) => {
   if (err) {
@@ -21,14 +21,14 @@ const handleMulterError = (err, req, res, next) => {
     // Multer-specific errors
     if (err instanceof multer.MulterError) {
       switch (err.code) {
-        case "LIMIT_FILE_SIZE":
-          return res.status(400).json({ error: "File size exceeds 5MB limit" });
-        case "LIMIT_UNEXPECTED_FILE":
-          return res
-            .status(400)
-            .json({ error: "Too many files uploaded or incorrect field name" });
-        default:
-          return res.status(400).json({ error: "File upload error" });
+      case "LIMIT_FILE_SIZE":
+        return res.status(400).json({ error: "File size exceeds 5MB limit" });
+      case "LIMIT_UNEXPECTED_FILE":
+        return res
+          .status(400)
+          .json({ error: "Too many files uploaded or incorrect field name" });
+      default:
+        return res.status(400).json({ error: "File upload error" });
       }
     }
     // General errors

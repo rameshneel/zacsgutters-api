@@ -219,7 +219,7 @@ const forgetPasswordToken = asyncHandler(async (req, res, next) => {
   }
 });
 
-const resetPasswordForForget = asyncHandler(async (req, res) => {
+const resetPasswordForForget = asyncHandler(async (req, res, next) => {
   const { password, confirmPassword } = req.body;
   const { token } = req.query;
 
@@ -254,7 +254,7 @@ const resetPasswordForForget = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, {}, "Password reset successfully"));
   } catch (error) {
-    throw error;
+    next(error);
   }
 });
 const updateAccountDetails = asyncHandler(async (req, res, next) => {
@@ -311,7 +311,7 @@ const refreshToken = asyncHandler(async (req, res) => {
       throw new ApiError(401, "Invalid refresh token");
     }
 
-    const { accessToken } = generateTokens(userId);
+    const { accessToken } = generateAccessAndRefereshTokens(userId);
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true,

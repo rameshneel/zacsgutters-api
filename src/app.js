@@ -52,7 +52,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/", paymentRoute);
 app.use("/api", authRoutes);
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res) {
   if (err instanceof ApiError) {
     console.error(`API Error: ${err.message}`);
     if (err.errors.length > 0) {

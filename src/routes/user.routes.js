@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   loginUser,
   logoutUser,
-  registerUser,
+  // registerUser,
   resetPasswordForForget,
   forgetPasswordToken,
   forgetPassword,
