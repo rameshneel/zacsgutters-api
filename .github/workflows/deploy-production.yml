@@ -27,71 +27,163 @@ jobs:
         run: npm run lint
 
   build:
-     name: Build and Push to Docker Hub
-     runs-on: ubuntu-latest
-     steps:
+    name: Build and Push
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
+      - name: Login to Docker Registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # आपका Docker Hub username
-          password: ${{ secrets.DOCKER_PASSWORD }}  # अब यह आपका Access Token है
-          # registry: docker.io (डिफ़ॉल्ट है, इसलिए छोड़ सकते हैं)
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache,mode=max
+          tags: ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }},${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:buildcache,mode=max
+
+      - name: Scan for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }}
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+
   deploy:
-   name: Deploy to Production
-   needs: build
-   runs-on: ubuntu-latest
-   steps:
-    - uses: actions/checkout@v3
+    name: Deploy to Production
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: Install SSH key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-    - name: Deploy to server
-      run: |
-        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-          # Create directory if not exists
-          mkdir -p /var/www/backend/zacsgutters-api
-          
-          # Stop and remove existing container
-          docker ps -q --filter 'name=zacsgutters-api' | xargs -r docker stop || true
-          docker ps -aq --filter 'name=zacsgutters-api' | xargs -r docker rm || true
-          
-          # Pull new image
-          docker pull ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }}
-          
-          # Run new container
-          docker run -d \
-            --name zacsgutters-api \
-            -p 3000:3000 \
-            --restart unless-stopped \
-            --env-file /var/www/backend/zacsgutters-api/.env\
-            -e VERSION=${{ github.sha }} \
-            ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }}
-        "
+      - name: Deploy to server
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd /var/www/backend/zacsgutters-api && \
+          git pull origin main && \
+          echo 'VERSION=${{ github.sha }}' > .env && \
+          cat .env.production >> .env && \
+          docker-compose pull && \
+          docker-compose up -d --no-build && \
+          docker system prune -af"
 
-    - name: Verify deployment
-      run: |
-        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-          docker ps | grep zacsgutters-api
-          docker logs zacsgutters-api --tail 50
-        "
-        curl -sSf https://${{ secrets.PRODUCTION_DOMAIN }}/health || exit 1
+      - name: Verify deployment
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "docker ps | grep zacsgutter-api"
+          curl -sSf https://${{ secrets.PRODUCTION_DOMAIN }}/health || exit 1
+
+
+# .github/workflows/deploy-production.yml
+# name: Deploy to Production
+
+# on:
+#   push:
+#     branches: [main]
+#   workflow_dispatch:
+
+# jobs:
+#   test:
+#     name: Test
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Use Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: "20"
+#           cache: "npm"
+#       - name: Install dependencies
+#         run: |
+#           npm install  # Ensure the package-lock.json is updated
+#           npm ci       # Clean install dependencies after package-lock.json is in sync
+#       - name: Run tests
+#         run: npm test
+#       - name: Run linting
+#         run: npm run lint
+
+#   build:
+#      name: Build and Push to Docker Hub
+#      runs-on: ubuntu-latest
+#      steps:
+#       - uses: actions/checkout@v3
+
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
+
+#       - name: Login to Docker Hub
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}  # आपका Docker Hub username
+#           password: ${{ secrets.DOCKER_PASSWORD }}  # अब यह आपका Access Token है
+#           # registry: docker.io (डिफ़ॉल्ट है, इसलिए छोड़ सकते हैं)
+
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v4
+#         with:
+#           context: .
+#           push: true
+#           tags: |
+#             ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:${{ github.sha }}
+#             ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:latest
+#           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache
+#           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache,mode=max
+#   deploy:
+#    name: Deploy to Production
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#     - uses: actions/checkout@v3
+
+#     - name: Install SSH key
+#       uses: shimataro/ssh-key-action@v2
+#       with:
+#         key: ${{ secrets.SSH_PRIVATE_KEY }}
+#         known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+#     - name: Deploy to server
+#       run: |
+#         ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+#           # Create directory if not exists
+#           mkdir -p /var/www/backend/zacsgutters-api
+          
+#           # Stop and remove existing container
+#           docker ps -q --filter 'name=zacsgutters-api' | xargs -r docker stop || true
+#           docker ps -aq --filter 'name=zacsgutters-api' | xargs -r docker rm || true
+          
+#           # Pull new image
+#           docker pull ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }}
+          
+#           # Run new container
+#           docker run -d \
+#             --name zacsgutters-api \
+#             -p 3000:3000 \
+#             --restart unless-stopped \
+#             --env-file /var/www/backend/zacsgutters-api/.env\
+#             -e VERSION=${{ github.sha }} \
+#             ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }}
+#         "
+
+#     - name: Verify deployment
+#       run: |
+#         ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+#           docker ps | grep zacsgutters-api
+#           docker logs zacsgutters-api --tail 50
+#         "
+#         curl -sSf https://${{ secrets.PRODUCTION_DOMAIN }}/health || exit 1
