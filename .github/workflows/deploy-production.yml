@@ -83,7 +83,7 @@ jobs:
             --name zacsgutter-api \
             -p 3000:3000 \
             --restart unless-stopped \
-            --env-file /var/www/backend/zacsgutter-api/.env.production \
+            --env-file /var/www/backend/zacsgutter-api/.env\
             -e VERSION=${{ github.sha }} \
             ${{ secrets.DOCKER_REGISTRY }}/zacsgutter-api:${{ github.sha }}
         "
