@@ -66,28 +66,29 @@ jobs:
         known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
     - name: Deploy to server
-      run: |
-        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-          # Create directory if not exists
-          mkdir -p /var/www/backend/zacsgutter-api
-          
-          # Stop and remove existing container
-          docker ps -q --filter 'name=zacsgutter-api' | xargs -r docker stop || true
-          docker ps -aq --filter 'name=zacsgutter-api' | xargs -r docker rm || true
-          
-          # Pull new image
-          docker pull ${{ secrets.DOCKER_REGISTRY }}/zacsgutter-api:${{ github.sha }}
-          
-          # Run new container
-          docker run -d \
-            --name zacsgutter-api \
-            -p 3000:3000 \
-            --restart unless-stopped \
-            --env-file /var/www/backend/zacsgutter-api/.env.production \
-            -e VERSION=${{ github.sha }} \
-            ${{ secrets.DOCKER_REGISTRY }}/zacsgutter-api:${{ github.sha }}
-        "
-
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            # डायरेक्टरी बनाएं (अगर नहीं है)
+            mkdir -p /var/www/backend/zacsgutters-api
+            
+            # Docker Hub पर लॉगिन करें
+            echo '${{ secrets.DOCKER_PASSWORD }}' | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
+            
+            # पुराने कंटेनर को स्टॉप/रिमूव करें
+            docker ps -q --filter 'name=zacsgutters-api' | xargs -r docker stop || true
+            docker ps -aq --filter 'name=zacsgutters-api' | xargs -r docker rm || true
+            
+            # नया इमेज पुल करें
+            docker pull ${{ secrets.DOCKER_USERNAME }}/zacsgutter-api:latest
+            
+            # कंटेनर रन करें (.env फाइल का उपयोग करके)
+            docker run -d \
+              --name zacsgutters-api \
+              -p 3000:3000 \
+              --restart unless-stopped \
+              --env-file /var/www/backend/zacsgutters-api/.env \
+              ${{ secrets.DOCKER_USERNAME }}/zacsgutter-api:latest
+          "
     - name: Verify deployment
       run: |
         ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
