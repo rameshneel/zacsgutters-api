@@ -48,9 +48,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }},${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:buildcache,mode=max
+          tags: ${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:${{ github.sha }},${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:buildcache,mode=max
 
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@master
@@ -118,32 +118,32 @@ jobs:
 #       - name: Run linting
 #         run: npm run lint
 
-#   build:
-#      name: Build and Push to Docker Hub
-#      runs-on: ubuntu-latest
-#      steps:
-#       - uses: actions/checkout@v3
+  # build:
+  #    name: Build and Push to Docker Hub
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #     - uses: actions/checkout@v3
 
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
 
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKER_USERNAME }}  # आपका Docker Hub username
-#           password: ${{ secrets.DOCKER_PASSWORD }}  # अब यह आपका Access Token है
-#           # registry: docker.io (डिफ़ॉल्ट है, इसलिए छोड़ सकते हैं)
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}  # आपका Docker Hub username
+  #         password: ${{ secrets.DOCKER_PASSWORD }}  # अब यह आपका Access Token है
+  #         # registry: docker.io (डिफ़ॉल्ट है, इसलिए छोड़ सकते हैं)
 
-#       - name: Build and push Docker image
-#         uses: docker/build-push-action@v4
-#         with:
-#           context: .
-#           push: true
-#           tags: |
-#             ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:${{ github.sha }}
-#             ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:latest
-#           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache
-#           cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache,mode=max
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         push: true
+  #         tags: |
+  #           ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:${{ github.sha }}
+  #           ${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:latest
+  #         cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache
+  #         cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/zacsgutters-api:buildcache,mode=max
 #   deploy:
 #    name: Deploy to Production
 #    needs: build
