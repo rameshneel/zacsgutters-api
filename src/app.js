@@ -55,7 +55,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/", paymentRoute);
 app.use("/api", authRoutes);
 
-function errorHandler(err, req, res) {
+function errorHandler(err, req, res, next) {
   if (err instanceof ApiError) {
     console.error(`API Error: ${err.message}`);
     if (err.errors.length > 0) {
@@ -66,20 +66,21 @@ function errorHandler(err, req, res) {
       success: false,
       message: err.message,
       errors: err.errors,
-      stack: err.stack,
+      stack: process.env.NODE_ENV === "production" ? null : err.stack,
     });
   }
+
   console.error("Internal Server Error:", err);
   return res.status(500).json({
     success: false,
     message: err.message,
-    // errors: err.errors,
-    stack: err.stack,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
 }
 
 app.use(errorHandler);
 
+// Handle 404 errors
 app.use((req, res) => {
   res.status(404).json({ message: "No route found" });
 });
