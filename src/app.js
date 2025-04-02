@@ -8,6 +8,9 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
+app.get("/health", (req, res) => {
+  res.status(200).send("OK"); // Success response with HTTP status 200
+});
 app.use(
   cors({
     origin: [
