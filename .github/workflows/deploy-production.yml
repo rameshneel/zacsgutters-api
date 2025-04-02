@@ -51,11 +51,11 @@ jobs:
           tags: ${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:${{ github.sha }},${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:buildcache,mode=max
-
+     
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ secrets.DOCKER_REGISTRY }}/zacsgutters-api:${{ github.sha }}
+          image-ref: ${{ secrets.DOCKER_REGISTRY }}/ramesh151/zacsgutters-api:${{ github.sha }}
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -86,7 +86,7 @@ jobs:
 
       - name: Verify deployment
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "docker ps | grep zacsgutter-api"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "docker ps | grep zacsgutters-api"
           curl -sSf https://${{ secrets.PRODUCTION_DOMAIN }}/health || exit 1
 
 
