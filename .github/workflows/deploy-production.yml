@@ -79,7 +79,7 @@ jobs:
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd /var/www/backend/zacsgutters-api && \
           git pull origin main && \
           echo 'VERSION=${{ github.sha }}' > .env && \
-          cat .env.production >> .env && \
+          cat .env >> .env && \
           docker-compose pull && \
           docker-compose up -d --no-build && \
           docker system prune -af"
